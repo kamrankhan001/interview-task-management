@@ -73,19 +73,4 @@
             </div>
         </div>
     </div>
-
-    <style>
-        /* Smooth drag and drop styling */
-        .sortable-chosen {
-            opacity: 0.8;
-            transform: scale(1.02);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .sortable-ghost {
-            opacity: 0.4;
-            background: #e5e7eb;
-            border: 2px dashed #9ca3af;
-        }
-    </style>
 @endsection
-
