@@ -16,23 +16,34 @@ class TaskController extends Controller
         return view('tasks.index', compact('projects'));
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required']);
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:150',
+                'project_id' => 'required|exists:projects,id',
+            ],
+            [
+                'name.required' => 'The task name is required',
+                'project_id.required' => 'Please select a project',
+                'project_id.exists' => 'The selected project is invalid',
+            ],
+        );
 
         $task = Task::create([
-            'name' => $request->name,
-            'project_id' => $request->project_id,
-            'priority' => Task::where('project_id', $request->project_id)->count() + 1,
+            'name' => $validated['name'],
+            'project_id' => $validated['project_id'],
+            'priority' => Task::where('project_id', $validated['project_id'])->count() + 1,
         ]);
 
-        return response()->json($task);
+        return response()->json([
+            'task' => $task,
+            'project_name' => $task->project->name,
+        ]);
     }
-
 
     /**
      * Update the specified resource in storage.

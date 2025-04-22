@@ -11,13 +11,14 @@
 
             <!-- Project Selector -->
             <div class="mb-8">
-                <label for="project-select" class="block text-sm font-medium text-gray-700 mb-2">Filter by Project</label>
-                <select id="project-select" class="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                <label for="project_id" class="block text-sm font-medium text-gray-700 mb-2">Filter by Project</label>
+                <select id="project_id" class="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
                     <option value="">All Projects</option>
                     @foreach($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->name }}</option>
                     @endforeach
                 </select>
+                <strong id="project_id-error" class="text-red-500 error-message"></strong>
             </div>
 
             <!-- Add Task Form -->
@@ -29,6 +30,7 @@
                         Add Task
                     </button>
                 </div>
+                <strong id="name-error" class="text-red-500 error-message"></strong>
             </div>
 
             <!-- Task List -->
@@ -74,3 +76,82 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Add New Task
+    $("#add-task").click(function() {
+        let name = $("#task-name").val().trim();
+        let project_id = $("#project_id").val();
+        let isValid = true;
+
+        // Clear previous errors
+        $('.error-message').text('');
+
+        // Validate name
+        if(name === '') {
+            $('#name-error').text('Please provide the name of task');
+            isValid = false;
+        }
+
+        // Validate project selection
+        if(!project_id) {
+            $('#project_id-error').text('Please select the project');
+            isValid = false;
+        }
+
+        if(!isValid) return;
+
+        $.post("/tasks", {
+            name: name,
+            project_id: project_id,
+            _token: '{{ csrf_token() }}'
+        })
+        .done(onSuccess)
+        .fail(onError);
+    });
+
+    function onSuccess(response) {
+        // Add the new task to the list
+        $("#task-list").prepend(`
+            <li class="group p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-move" data-id="${response.task.id}">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                        </svg>
+                        <span class="text-gray-800">${response.task.name}</span>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 px-3 py-1 bg-red-100 text-red-600 text-sm font-medium rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 delete-task">
+                        Delete
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        ${response.project_name}
+                    </span>
+                </div>
+            </li>
+        `);
+
+        // Clear the input field
+        $("#task-name").val('');
+
+        // Hide empty state if shown
+        $("#empty-state").addClass('hidden');
+    }
+
+    function onError(xhr) {
+        if(xhr.status === 422) {
+            // Handle validation errors
+            let errors = xhr.responseJSON.errors;
+            for(let field in errors) {
+                $(`#${field}-error`).text(errors[field][0]);
+            }
+        } else {
+            console.error('Error:', xhr.responseText);
+            alert('An error occurred while creating the task');
+        }
+    }
+</script>
+@endpush
