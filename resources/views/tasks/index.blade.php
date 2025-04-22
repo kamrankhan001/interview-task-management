@@ -193,5 +193,42 @@
                 }
             });
         });
+
+        // Drag & Drop Reordering
+        $("#task-list").sortable({
+            opacity: 0.7,
+            placeholder: "sortable-placeholder",
+            update: function(event, ui) {
+                let order = [];
+                $("#task-list li").each(function(index) {
+                    order.push({
+                        id: $(this).data('id'),
+                        position: index + 1
+                    });
+                });
+
+                $.post("{{ route('tasks.reorder') }}", {
+                        order: order,
+                        _token: '{{ csrf_token() }}'
+                    })
+                    .done(function(response) {
+                        if(response.success){
+                            alert('Order updated successfully');
+                        }
+                    })
+                    .fail(function(xhr) {
+                        console.error('Error updating order:', xhr.responseJSON);
+
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            alert(xhr.responseJSON.message);
+                        } else {
+                            alert('Failed to update task order');
+                        }
+
+                        // Revert the sortable if needed
+                        $("#task-list").sortable("cancel");
+                    });
+            }
+        });
     </script>
 @endpush
