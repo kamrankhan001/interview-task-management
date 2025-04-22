@@ -56,6 +56,8 @@
                                         <span class="text-gray-800">{{ $task->name }}</span>
                                     </div>
                                     <button
+                                        class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 edit-task opacity-0 group-hover:opacity-100 transition-opacity">Edit</button>
+                                    <button
                                         class="opacity-0 group-hover:opacity-100 px-3 py-1 bg-red-100 text-red-600 text-sm font-medium rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 delete-task">
                                         Delete
                                     </button>
@@ -132,6 +134,7 @@
                         </svg>
                         <span class="text-gray-800">${response.task.name}</span>
                     </div>
+                    <button class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 edit-task opacity-0 group-hover:opacity-100 transition-opacity">Edit</button>
                     <button class="opacity-0 group-hover:opacity-100 px-3 py-1 bg-red-100 text-red-600 text-sm font-medium rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 delete-task">
                         Delete
                     </button>
@@ -197,7 +200,6 @@
         // Drag & Drop Reordering
         $("#task-list").sortable({
             opacity: 0.7,
-            placeholder: "sortable-placeholder",
             update: function(event, ui) {
                 let order = [];
                 $("#task-list li").each(function(index) {
@@ -212,7 +214,7 @@
                         _token: '{{ csrf_token() }}'
                     })
                     .done(function(response) {
-                        if(response.success){
+                        if (response.success) {
                             alert('Order updated successfully');
                         }
                     })
@@ -229,6 +231,70 @@
                         $("#task-list").sortable("cancel");
                     });
             }
+        });
+
+        // Edit Task
+        $(document).on("click", ".edit-task", function() {
+            let $li = $(this).closest('li');
+            let taskId = $li.data('id');
+            let $nameContainer = $li.find('.flex.items-center').find('span:first'); // Target the name span
+
+            // Store current name
+            let currentName = $nameContainer.text();
+
+            // Replace text with input field
+            $nameContainer.replaceWith(`
+        <input type="text" class="edit-task-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+               value="${currentName}">
+    `);
+
+            // Focus and select all text
+            $li.find('.edit-task-input').focus().select();
+
+            // Hide edit/delete buttons while editing
+            $li.find('.edit-task, .delete-task').hide();
+        });
+
+        // Save edited task (on enter key or blur)
+        $(document).on('blur keypress', '.edit-task-input', function(e) {
+            if (e.type === 'keypress' && e.which !== 13) return;
+
+            let $input = $(this);
+            let newName = $input.val().trim();
+            let $li = $input.closest('li');
+            let taskId = $li.data('id');
+
+            if (!newName) {
+                let originalName = $input.val(); // Get the original value before trimming
+                $input.replaceWith(`<span class="text-gray-800">${originalName}</span>`);
+                $li.find('.edit-task, .delete-task').show();
+                return;
+            }
+
+            $.ajax({
+                url: `/tasks/${taskId}`,
+                type: 'PUT',
+                data: {
+                    name: newName,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function() {
+                    // Replace input with the new name
+                    $input.replaceWith(`
+                <span class="text-gray-800">${newName}</span>
+            `);
+                    $li.find('.edit-task, .delete-task').show();
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseText);
+                    alert('Failed to update the task. Please try again.');
+
+                    // Revert to original display
+                    let originalName = $input.val();
+                    $input.replaceWith(`<span class="text-gray-800">${originalName}</span>`);
+                    $li.find('.edit-task, .delete-task').show();
+                }
+            });
         });
     </script>
 @endpush
