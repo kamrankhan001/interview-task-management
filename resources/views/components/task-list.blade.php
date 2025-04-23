@@ -9,5 +9,5 @@
         @endforeach
     </ul>
 
-    {{-- <x-empty-state :project="$projects"/> --}}
+    <x-empty-state :projects="$projects"/>
 </div>

@@ -47,6 +47,8 @@ class TaskManager {
         tasks.forEach(task => {
             $taskList.append(this.createTaskElement(task));
         });
+
+        $('#empty-state').addClass('hidden');
     }
 
     createTaskElement(task) {
@@ -232,7 +234,8 @@ class TaskManager {
     }
 
     checkEmptyState() {
-        $('#empty-state').toggleClass('hidden', $('#task-list li').length > 0);
+        const isEmpty = $('#task-list li').length === 0;
+        $('#empty-state').toggleClass('hidden', !isEmpty);
     }
 
     handleError(xhr) {
