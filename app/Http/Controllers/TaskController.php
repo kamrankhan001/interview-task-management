@@ -10,11 +10,29 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::with('tasks')->get();
+        $projects = Project::all();
+
+        // If it's an AJAX request, return JSON
+        if ($request->ajax()) {
+            $query = Task::with('project');
+
+            if ($request->has('project_id') && $request->project_id) {
+                $query->where('project_id', $request->project_id);
+            }
+
+            $tasks = $query->orderBy('priority')->get();
+
+            return response()->json([
+                'tasks' => $tasks
+            ]);
+        }
+
+        // Regular request returns view
         return view('tasks.index', compact('projects'));
     }
+
 
     /**
      * Store a newly created resource in storage.

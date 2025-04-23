@@ -14,7 +14,7 @@
                 <label for="project_id" class="block text-sm font-medium text-gray-700 mb-2">Filter by Project</label>
                 <select id="project_id"
                     class="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
-                    <option value="">All Projects</option>
+                    <option value="" selected disabled>All Projects</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->name }}</option>
                     @endforeach
