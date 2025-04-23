@@ -25,14 +25,16 @@ class TaskController extends Controller
             $tasks = $query->orderBy('priority')->get();
 
             return response()->json([
-                'tasks' => $tasks
+                'tasks' => $tasks,
             ]);
         }
 
         // Regular request returns view
-        return view('tasks.index', compact('projects'));
+        return view('tasks.index', [
+            'projects' => $projects,
+            'showTasks' => false,
+        ]);
     }
-
 
     /**
      * Store a newly created resource in storage.

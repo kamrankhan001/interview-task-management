@@ -23,7 +23,12 @@
             </div>
 
             <x-task-form />
-            <x-task-list :projects="$projects" />
+
+            <x-task-list :projects="$projects" :showTasks="$showTasks"/>
+
+            @if (!$showTasks)
+                <p class="bg-gray-50 p-5 text-center text-xl" id="select-project-text">Please select the project.</p>
+            @endif
         </div>
     </div>
 @endsection

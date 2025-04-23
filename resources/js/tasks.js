@@ -23,6 +23,7 @@ class TaskManager {
     loadTasks(project_id = null) {
         const params = project_id ? { project_id } : {};
 
+        if(project_id == null) return;
         $.get({
             url: "/tasks",
             data: params,
@@ -43,6 +44,8 @@ class TaskManager {
             $('#empty-state').removeClass('hidden');
             return;
         }
+
+        $("#select-project-text").remove();
 
         tasks.forEach(task => {
             $taskList.append(this.createTaskElement(task));
