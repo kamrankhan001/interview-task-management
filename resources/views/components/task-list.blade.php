@@ -1,7 +1,7 @@
 <div class="space-y-3">
     <h2 class="text-lg font-semibold text-gray-800 mb-3">Your Tasks</h2>
 
-    <ul id="task-list" class="space-y-3">
+    <ul id="task-list" class="space-y-3 max-h-96 overflow-auto">
         @if ($showTasks)
             @foreach ($projects as $project)
                 @foreach ($project->tasks as $task)
