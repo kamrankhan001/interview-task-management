@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Task Manager</title>
-    <!-- Remove Bootstrap -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 <body class="bg-gray-100">
