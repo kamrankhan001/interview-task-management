@@ -1,6 +1,6 @@
 class TaskManager {
     constructor() {
-        this.csrfToken = $('meta[name="csrf-token"]').attr('content');
+        this.csrfToken = $('meta[name="csrf-token"]').attr("content");
         this.initEvents();
         this.loadTasks();
     }
@@ -23,17 +23,17 @@ class TaskManager {
     loadTasks(project_id = null) {
         const params = project_id ? { project_id } : {};
 
-        if(project_id == null) return;
+        if (project_id == null) return;
         $.get({
             url: "/tasks",
             data: params,
-            dataType: 'json'
+            dataType: "json",
         })
-        .done((response) => {
-            this.renderTasks(response.tasks);
-            this.checkEmptyState();
-        })
-        .fail(this.handleError);
+            .done((response) => {
+                this.renderTasks(response.tasks);
+                this.checkEmptyState();
+            })
+            .fail(this.handleError);
     }
 
     renderTasks(tasks) {
@@ -41,44 +41,48 @@ class TaskManager {
         $taskList.empty();
 
         if (tasks.length === 0) {
-            $('#empty-state').removeClass('hidden');
+            $("#empty-state").removeClass("hidden");
             return;
         }
 
         $("#select-project-text").remove();
 
-        tasks.forEach(task => {
+        tasks.forEach((task) => {
             $taskList.append(this.createTaskElement(task));
         });
 
-        $('#empty-state').addClass('hidden');
+        $("#empty-state").addClass("hidden");
     }
 
     createTaskElement(task) {
         const projectName = task.project?.name || task.project_name;
         return `
-            <li class="group p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-move" data-id="${task.id}">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center">
-                        <span class="h-5 w-5 text-gray-400 mr-3">⋮</span>
-                        <span class="text-gray-800 task-name">${task.name}</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="edit-task opacity-0 group-hover:opacity-100 transition-opacity">
-                            ${this.getEditIcon()}
-                        </button>
-                        <button class="delete-task opacity-0 group-hover:opacity-100 transition-opacity">
-                            ${this.getDeleteIcon()}
-                        </button>
-                    </div>
+        <li class="group p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-move" data-id="${
+            task.id
+        }">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="h-5 w-5 text-gray-400 dark:text-gray-500 mr-3">⋮</span>
+                    <span class="text-gray-800 dark:text-gray-200 task-name">${
+                        task.name
+                    }</span>
                 </div>
-                <div class="mt-2">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                        ${projectName}
-                    </span>
+                <div class="flex gap-2">
+                    <button class="edit-task opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer">
+                        ${this.getEditIcon()}
+                    </button>
+                    <button class="delete-task opacity-0 group-hover:opacity-100 transition-opacity hover:cursor-pointer">
+                        ${this.getDeleteIcon()}
+                    </button>
                 </div>
-            </li>
-        `;
+            </div>
+            <div class="mt-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
+                    ${projectName}
+                </span>
+            </div>
+        </li>
+    `;
     }
 
     getEditIcon() {
@@ -109,64 +113,66 @@ class TaskManager {
             $.post("/tasks", {
                 name: name,
                 project_id: project_id,
-                _token: this.csrfToken
+                _token: this.csrfToken,
             })
-            .done((response) => {
-                this.addTaskToDOM(response);
-            })
-            .fail(this.handleError);
+                .done((response) => {
+                    this.addTaskToDOM(response);
+                })
+                .fail(this.handleError);
         });
     }
 
     addTaskToDOM(response) {
-        $("#task-list").prepend(this.createTaskElement({
-            ...response.task,
-            project_name: response.project_name
-        }));
-        $("#task-name").val('');
-        $("#empty-state").addClass('hidden');
+        $("#task-list").prepend(
+            this.createTaskElement({
+                ...response.task,
+                project_name: response.project_name,
+            })
+        );
+        $("#task-name").val("");
+        $("#empty-state").addClass("hidden");
     }
 
     handleDeleteTask() {
         $(document).on("click", ".delete-task", (e) => {
-            const taskElement = $(e.currentTarget).closest('li');
-            const taskId = taskElement.data('id');
+            const taskElement = $(e.currentTarget).closest("li");
+            const taskId = taskElement.data("id");
 
-            if (!confirm('Are you sure you want to delete this task?')) return;
+            if (!confirm("Are you sure you want to delete this task?")) return;
 
             $.ajax({
                 url: `/tasks/${taskId}`,
-                type: 'DELETE',
+                type: "DELETE",
                 data: { _token: this.csrfToken },
                 success: () => {
                     taskElement.remove();
                     this.checkEmptyState();
                 },
-                error: this.handleError
+                error: this.handleError,
             });
         });
     }
 
     handleEditTask() {
         $(document).on("click", ".edit-task", (e) => {
-            const $li = $(e.currentTarget).closest('li');
-            const currentName = $li.find('.task-name').text();
+            const $li = $(e.currentTarget).closest("li");
+            const currentName = $li.find(".task-name").text();
 
-            $li.find('.task-name').replaceWith(`
+            $li.find(".task-name").replaceWith(`
                 <input type="text" class="edit-task-input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="${currentName}">
             `);
 
-            $li.find('.edit-task-input').focus().select();
-            $li.find('.edit-task, .delete-task').hide();
+            $li.find(".edit-task-input").focus().select();
+            $li.find(".edit-task, .delete-task").hide();
         });
 
-        $(document).on('blur keypress', '.edit-task-input', (e) => {
-            if (e.type === 'keypress' && e.which !== 13) return;
+        $(document).on("blur keypress", ".edit-task-input", (e) => {
+            if (e.type === "keypress" && e.which !== 13) return;
 
             const $input = $(e.target);
             const newName = $input.val().trim();
-            const $li = $input.closest('li');
-            const taskId = $li.data('id');
+            const $li = $input.closest("li");
+            const taskId = $li.data("id");
 
             if (!newName) {
                 this.revertEdit($input, $li);
@@ -175,16 +181,18 @@ class TaskManager {
 
             $.ajax({
                 url: `/tasks/${taskId}`,
-                type: 'PUT',
+                type: "PUT",
                 data: { name: newName, _token: this.csrfToken },
                 success: () => {
-                    $input.replaceWith(`<span class="text-gray-800 task-name">${newName}</span>`);
-                    $li.find('.edit-task, .delete-task').show();
+                    $input.replaceWith(
+                        `<span class="text-gray-800 task-name">${newName}</span>`
+                    );
+                    $li.find(".edit-task, .delete-task").show();
                 },
                 error: (xhr) => {
                     this.handleError(xhr);
                     this.revertEdit($input, $li);
-                }
+                },
             });
         });
     }
@@ -196,16 +204,16 @@ class TaskManager {
                 const order = [];
                 $("#task-list li").each((index, el) => {
                     order.push({
-                        id: $(el).data('id'),
-                        position: index + 1
+                        id: $(el).data("id"),
+                        position: index + 1,
                     });
                 });
 
                 $.post("/tasks/reorder", {
                     order: order,
-                    _token: this.csrfToken
+                    _token: this.csrfToken,
                 }).fail(this.handleError);
-            }
+            },
         });
     }
 
@@ -214,12 +222,12 @@ class TaskManager {
         let isValid = true;
 
         if (!name) {
-            $('#name-error').text('Please provide the name of task');
+            $("#name-error").text("Please provide the name of task");
             isValid = false;
         }
 
         if (!project_id) {
-            $('#project_id-error').text('Please select the project');
+            $("#project_id-error").text("Please select the project");
             isValid = false;
         }
 
@@ -227,18 +235,21 @@ class TaskManager {
     }
 
     clearErrors() {
-        $('.error-message').text('');
+        $(".error-message").text("");
     }
 
     revertEdit($input, $li) {
-        const originalName = $li.find('.task-name').data('original-name') || $input.val();
-        $input.replaceWith(`<span class="text-gray-800 task-name">${originalName}</span>`);
-        $li.find('.edit-task, .delete-task').show();
+        const originalName =
+            $li.find(".task-name").data("original-name") || $input.val();
+        $input.replaceWith(
+            `<span class="text-gray-800 task-name">${originalName}</span>`
+        );
+        $li.find(".edit-task, .delete-task").show();
     }
 
     checkEmptyState() {
-        const isEmpty = $('#task-list li').length === 0;
-        $('#empty-state').toggleClass('hidden', !isEmpty);
+        const isEmpty = $("#task-list li").length === 0;
+        $("#empty-state").toggleClass("hidden", !isEmpty);
     }
 
     handleError(xhr) {
@@ -248,8 +259,8 @@ class TaskManager {
                 $(`#${field}-error`).text(errors[field][0]);
             }
         } else {
-            console.error('Error:', xhr.responseText);
-            alert('An error occurred. Please try again.');
+            console.error("Error:", xhr.responseText);
+            alert("An error occurred. Please try again.");
         }
     }
 }

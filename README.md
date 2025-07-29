@@ -30,8 +30,8 @@ A Laravel-based task management application with project organization and priori
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/kamrankhan001/interview-task-management.git
-   cd interview-task-management
+   git clone https://github.com/kamrankhan001/mini-task-management.git
+   cd mini-task-management
    ```
 
 2. **Install dependencies**:

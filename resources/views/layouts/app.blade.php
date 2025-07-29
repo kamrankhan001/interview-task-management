@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full">
 <head>
     <title>Task Manager</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-<body class="bg-gray-100">
+<body class="h-full bg-gray-100 dark:bg-gray-900">
     <div class="container mx-auto px-4 py-8">
         @yield('content')
     </div>
