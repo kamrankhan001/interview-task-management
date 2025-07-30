@@ -1,3 +1,5 @@
+![Task Manager Screenshot](screenshot.webp)
+
 # Task Manager
 
 A Laravel-based task management application with project organization and priority sorting.
@@ -96,7 +98,7 @@ php artisan migrate:fresh --seed
 ## GitHub Repository
 
 Find the full source code at:  
-[https://github.com/kamrankhan001/interview-task-management](https://github.com/kamrankhan001/interview-task-management)
+[https://github.com/kamrankhan001/mini-task-management](https://github.com/kamrankhan001/mini-task-management)
 
 ## License
 
