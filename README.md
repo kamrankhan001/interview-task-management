@@ -1,4 +1,4 @@
-![Task Manager Screenshot](screenshot.webp)
+![Task Manager Screenshot](./public/screenshot.webp)
 
 # Task Manager
 
