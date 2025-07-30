@@ -22,7 +22,7 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:150',
+            'name' => 'required|string|max:150|regex:/^[a-zA-Z0-9\s.,!?()\'"-]+$/',
             'project_id' => 'required|exists:projects,id',
         ];
     }

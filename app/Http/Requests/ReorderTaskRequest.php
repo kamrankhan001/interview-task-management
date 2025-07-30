@@ -23,7 +23,7 @@ class ReorderTaskRequest extends FormRequest
     {
         return [
             'order' => 'required|array',
-            'order.*.id' => 'required|exists:tasks,id',
+            'order.*.id' => 'required|integer|exists:tasks,id',
             'order.*.position' => 'required|integer|min:1',
         ];
     }
